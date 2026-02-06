@@ -131,6 +131,53 @@ Avvio locale del progetto
 2. Avvia l'app:
    npm start
 
+Test
+- I test unitari si trovano nella cartella `test/` e sono scritti con Mocha + Chai; per gli stub/spie viene usato Sinon.
+- Le dipendenze di sviluppo necessarie sono già presenti in `package.json` (mocha, chai, sinon).
+
+Eseguire i test
+1. Installa le dipendenze (se non l'hai già fatto):
+
+```bash
+npm install
+```
+
+2. Esegui tutti i test:
+
+```bash
+npm test
+# oppure
+npx mocha --exit
+```
+
+3. Eseguire un singolo file di test (esempio):
+
+```bash
+npx mocha test/ateneiController.test.js --exit
+```
+
+Opzioni utili
+- Eseguire i test in watch mode (debug/ sviluppo):
+
+```bash
+npx mocha --watch
+```
+
+- Generare coverage (opzionale):
+
+```bash
+npm install --save-dev nyc
+npx nyc mocha --exit
+```
+
+Note
+- I test usano `sinon` per stubbare i metodi dei model, quindi non è necessario avere un database PostgreSQL attivo per eseguire la maggior parte dei test controller.
+- I file di test attualmente inclusi sono:
+  - `test/ateneiController.test.js`
+  - `test/corsiController.test.js`
+  - `test/tipologieController.test.js`
+  - `test/homepageController.test.js`
+
 Struttura del progetto (breve)
 - `app.js` - entrypoint dell'app Express
 - `config/db.js` - configurazione connessione PostgreSQL
