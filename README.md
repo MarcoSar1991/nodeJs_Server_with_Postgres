@@ -1,8 +1,8 @@
 # Reach17
 
-## Progetto Node.js (Express) per la gestione di corsi, tipologie e atenei.
+### Progetto Node.js (Express) per la gestione di corsi, tipologie e atenei.
 
-## Badges
+### Badges
 - Node: >= 22.20.0 (consigliata)
 
 Prerequisiti
