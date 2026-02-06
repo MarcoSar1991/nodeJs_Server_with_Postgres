@@ -10,7 +10,7 @@
 - PostgreSQL come DBMS
 - Brew (macOS) per installare PostgreSQL opzionalmente
 
-Installazione
+## Installazione
 1. Clona il repository:
    git clone <repo-url>
 2. Entra nella cartella del progetto:
@@ -18,7 +18,7 @@ Installazione
 3. Installa le dipendenze:
    npm install
 
-Configurazione ambiente
+## Configurazione ambiente
 - Il progetto usa una connessione a PostgreSQL configurata in `config/db.js`.
 - È consigliato impostare le variabili d'ambiente (esempi):
   - DB_HOST (default: localhost)
@@ -28,7 +28,7 @@ Configurazione ambiente
   - DB_PASSWORD
 - Puoi configurare le variabili per la connessione al database seguendo lo schema presente nel file `.env.example` nella root del progetto.
 
-Creazione del database (macOS con Homebrew)
+## Creazione del database (macOS con Homebrew)
 Di seguito ogni passo ha una breve indicazione e, immediatamente sotto, il comando da eseguire nel terminale (o dentro `psql` quando indicato).
 
 1. Installazione di PostgreSQL (se non già presente)
@@ -126,12 +126,12 @@ psql -U <role> -d <database> -f db/migrations.sql
 psql -U <role> -d <database> -f db/seed.sql
 ```
 
-Avvio locale del progetto
+## Avvio locale del progetto
 1. Assicurati di aver impostato le variabili d'ambiente per la connessione al DB o modifica `config/db.js` con i parametri corretti.
 2. Avvia l'app:
    npm start
 
-Struttura del progetto (breve)
+## Struttura del progetto (breve)
 - `app.js` - entrypoint dell'app Express
 - `config/db.js` - configurazione connessione PostgreSQL
 - `controllers/` - logica delle route
@@ -141,13 +141,13 @@ Struttura del progetto (breve)
 - `public/` - risorse statiche
 - `db/` - file `migrations.sql` e `seed.sql`
 
-Note e consigli
+## Note e consigli
 - Versione Node: il progetto è stato sviluppato con Node 24.13.0; in produzione consigliata almeno la 22.20.0.
 - Se usi un file `.env`, tieni fuori le credenziali dal controllo versione (vedi `.gitignore`).
 
-Problemi comuni
+## Problemi comuni
 - Errore di connessione: verifica che PostgreSQL sia in esecuzione e che host/porta/credenziali siano corrette.
 - Migration/Seed: assicurati di eseguire `migrations.sql` prima di `seed.sql`.
 
-Licenza
+## Licenza
 - Questo progetto è distribuito sotto la licenza MIT. Vedi il file `LICENSE` per il testo completo.
