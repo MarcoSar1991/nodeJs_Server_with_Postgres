@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include("./partials/head.ejs") %>
+<body>
+
+<%- include("./partials/nav.ejs") %>
+
+<main>
+    <h1>Gestione Corsi Universitari</h1>
+
+    <p>Applicazione per la gestione di tipologie, corsi, atenei e associazioni.</p>
+
+    <div class="info-box">
+        <p><strong>Stack:</strong> Node.js · Express · PostgreSQL · EJS</p>
+        <p><strong>Architettura:</strong> REST API + Server Side Rendering</p>
+    </div>
+
+    <p>Usa il menu in alto per accedere alle sezioni operative.</p>
+
+    <section class="box">
+
+        <h3>Associa Corso ad Ateneo</h3>
+
+        <form method="POST" action="/" class="association-form">
+
+            <select name="corso_id" required>
+                <option value="">Seleziona corso</option>
+                <% corsi.forEach(corso => { %>
+                    <option value="<%= corso.id %>">
+                        <%= corso.nome %>
+                    </option>
+                <% }) %>
+            </select>
+
+            <select name="ateneo_id" required>
+                <option value="">Seleziona ateneo</option>
+                <% atenei.forEach(ateneo => { %>
+                    <option value="<%= ateneo.id %>">
+                        <%= ateneo.nome %>
+                    </option>
+                <% }) %>
+            </select>
+
+            <button type="submit">Associa</button>
+
+        </form>
+
+    </section>
+
+    <section class="box">
+
+        <h3>Ricerca Corsi e Atenei</h3>
+
+        <form method="GET" action="/ricerca" class="filter-form">
+
+            <div class="form-group">
+                <label for="corso">Nome corso</label>
+                <select name="id_corso" id="corso">
+                    <option value="">Tutti i corsi</option>
+                    <% corsi.forEach(corso => { %>
+                        <option value="<%= corso.id %>"><%= corso.nome %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tipologia">Tipologia corso</label>
+                <select id="tipologia" name="id_tipologia">
+                    <option value="">Tutte le tipologie</option>
+                    <% tipologie.forEach(tipologia => { %>
+                        <option value="<%= tipologia.id %>"><%= tipologia.nome %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form-group actions">
+                <button type="submit" class="btn primary">Cerca</button>
+            </div>
+
+        </form>
+
+    </section>
+
+    <section class="box">
+        <h3>Risultati</h3>
+
+        <% if (!ricercaFatta) { %>
+            <p>Usa i filtri sopra per visualizzare i corsi e gli atenei.</p>
+
+        <% } else if (risultati.length === 0) { %>
+            <p>Nessun risultato trovato.</p>
+
+        <% } else { %>
+            <table>
+                <thead>
+                <tr>
+                    <th>Corso</th>
+                    <th>Tipologia</th>
+                    <th>Ateneo</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% risultati.forEach(r => { %>
+                    <tr>
+                        <td><%= r.nome_corso %></td>
+                        <td><%= r.nome_tipologia %></td>
+                        <td><%= r.nome_ateneo %></td>
+                    </tr>
+                <% }) %>
+                </tbody>
+            </table>
+        <% } %>
+    </section>
+
+</main>
+
+<% if (typeof alertMessage !== 'undefined') { %>
+    <script>
+      alert("<%= alertMessage %>");
+    </script>
+<% } %>
+</body>
+</html>

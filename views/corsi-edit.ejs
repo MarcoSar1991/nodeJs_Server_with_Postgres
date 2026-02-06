@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include("./partials/head.ejs") %>
+<body>
+
+<%- include("./partials/nav.ejs") %>
+
+<main>
+    <h2>Modifica Corso</h2>
+
+    <form method="POST" action="/corsi/<%= corso.id %>/edit">
+        <input type="text" name="nome" value="<%= corso.nome %>" required>
+
+        <div class="form-actions">
+            <button type="submit" class="btn save">Salva</button>
+            <a href="/corsi" class="btn cancel">Annulla</a>
+        </div>
+    </form>
+
+</main>
+
+</body>
+</html>

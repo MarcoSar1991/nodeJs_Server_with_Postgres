@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include("./partials/head.ejs") %>
+<body>
+
+<%- include("./partials/nav.ejs") %>
+
+<main>
+    <h2>Modifica Tipologia</h2>
+
+    <form method="POST" action="/tipologie/<%= tipologia.id %>/edit">
+        <input type="text" name="nome" value="<%= tipologia.nome %>" required>
+
+        <div class="form-actions">
+            <button type="submit" class="btn save">Salva</button>
+            <a href="/tipologie" class="btn cancel">Annulla</a>
+        </div>
+    </form>
+
+</main>
+
+</body>
+</html>

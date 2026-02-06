@@ -1,0 +1,170 @@
+:root {
+    --primary-color: #2c6bed;
+    --primary-hover: #1f56c2;
+    --edit-color: #4CAF50;
+    --edit-hover: #45a049;
+    --delete-color: #f44336;
+    --delete-hover: #da190b;
+    --cancel-color: #777;
+    --cancel-hover: #555;
+    --info-bg: #f2f2f2;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+    display: flex;
+    height: 40px;
+    gap: 20px;
+    align-items: center;
+    background-color: #333;
+    padding: 0 10px;
+}
+
+nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    height: 100%;
+    color: #fff;
+    text-decoration: none;
+}
+
+nav a:hover {
+    background-color: #555;
+}
+
+main {
+    padding: 20px;
+}
+
+.menu a {
+    display: block;
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+/* Buttons */
+.btn {
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+    color: white;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn.primary { background-color: var(--primary-color); }
+.btn.primary:hover { background-color: var(--primary-hover); }
+
+.btn.edit { background-color: var(--edit-color); }
+.btn.edit:hover { background-color: var(--edit-hover); }
+
+.btn.save { background-color: var(--edit-color); }
+.btn.save:hover { background-color: var(--edit-hover); }
+
+.btn.delete { background-color: var(--delete-color); }
+.btn.delete:hover { background-color: var(--delete-hover); }
+
+.btn.cancel { background-color: var(--cancel-color); }
+.btn.cancel:hover { background-color: var(--cancel-hover); }
+
+/* Box e layout  */
+.box {
+    margin-top: 20px;
+    padding: 15px;
+    background: var(--info-bg);
+    border-radius: 6px;
+}
+
+.info-box {
+    background: var(--info-bg);
+    padding: 15px;
+    border-radius: 6px;
+    max-width: 500px;
+}
+
+.association-form,
+.filter-form,
+.form-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.filter-form {
+    align-items: flex-end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+select,
+input[type="text"] {
+    padding: 6px 8px;
+}
+
+/* Tabelle */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* Buttons azioni */
+.btn-edit {
+    padding: 6px 10px;
+    background: #3498db;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.btn-edit:hover {
+    background: #2980b9;
+}
+
+.btn-delete {
+    background: var(--delete-color);
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background: var(--delete-hover);
+}

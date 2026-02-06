@@ -1,0 +1,26 @@
+{
+  "name": "reach17",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "Marco Sarcina",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "mocha --exit"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.4",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "pg": "^8.17.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11",
+    "sinon": "^21.0.1",
+    "mocha": "^10.2.0",
+    "chai": "^4.3.8"
+  }
+}

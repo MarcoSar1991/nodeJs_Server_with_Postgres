@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include("./partials/head.ejs") %>
+<body>
+
+<%- include("./partials/nav.ejs") %>
+
+<main>
+    <h2>Gestione Corsi</h2>
+
+    <section class="box">
+
+        <h3>Inserisci Nuovo Corso</h3>
+
+        <form method="POST" action="/corsi">
+
+            <input type="text" name="nome" placeholder="Nome corso" class="input-corsi" required>
+
+            <select name="tipologia_id" required>
+                <option value="">Seleziona tipologia</option>
+
+                <% tipologie.forEach(tipologia => { %>
+                    <option value="<%= tipologia.id %>">
+                        <%= tipologia.nome %>
+                    </option>
+                <% }) %>
+            </select>
+
+            <button type="submit">Inserisci</button>
+
+        </form>
+
+    </section>
+
+    <section class="box">
+
+        <h3>Lista Corsi</h3>
+
+        <% if (corsi.length > 0) { %>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome Corso</th>
+                    <th>Tipologia Corso</th>
+                    <th>Azioni</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <% corsi.forEach(corso => { %>
+                    <tr>
+                        <td><%= corso.id %></td>
+                        <td><%= corso.nome %></td>
+                        <td><%= corso.tipologia_corso %></td>
+                        <td class="actions">
+                            <a href="/corsi/<%= corso.id %>/edit" class="btn edit">Modifica</a>
+
+                            <form method="POST" action="/corsi/<%= corso.id %>/delete"
+                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo corso?');">
+                                <button type="submit" class="btn delete">Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+                </tbody>
+
+            </table>
+
+        <% } else { %>
+            <p>Non ci sono corsi da visualizzare</p>
+        <% } %>
+
+    </section>
+
+</main>
+
+<% if (typeof alertMessage !== 'undefined') { %>
+    <script>alert("<%= alertMessage %>")</script>
+<% } %>
+
+</body>
+</html>

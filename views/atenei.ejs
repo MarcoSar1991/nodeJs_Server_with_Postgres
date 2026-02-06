@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include("./partials/head.ejs") %>
+<body>
+
+<%- include("./partials/nav.ejs") %>
+
+<main>
+    <h2>Gestione Atenei</h2>
+
+    <section class="box">
+
+        <h3>Inserisci Nuovo Ateneo</h3>
+
+        <form method="POST" action="/atenei">
+            <input type="text" name="nome" placeholder="Nome ateneo" required>
+            <button type="submit">Inserisci</button>
+        </form>
+
+    </section>
+
+    <section class="box">
+
+        <h3>Lista Atenei</h3>
+
+        <% if (atenei.length > 0) { %>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Azioni</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <% atenei.forEach(ateneo => { %>
+                    <tr>
+                        <td><%= ateneo.id %></td>
+                        <td><%= ateneo.nome %></td>
+                        <td class="actions">
+                            <a href="/atenei/<%= ateneo.id %>/edit" class="btn edit">Modifica</a>
+
+                            <form method="POST" action="/atenei/<%= ateneo.id %>/delete"
+                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo ateneo?');">
+                                <button type="submit" class="btn delete">Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+                </tbody>
+
+            </table>
+
+        <% } else { %>
+            <p>Non ci sono atenei da visualizzare</p>
+        <% } %>
+
+    </section>
+
+</main>
+
+<% if (typeof alertMessage !== 'undefined') { %>
+    <script>alert("<%= alertMessage %>")</script>
+<% } %>
+
+</body>
+</html>

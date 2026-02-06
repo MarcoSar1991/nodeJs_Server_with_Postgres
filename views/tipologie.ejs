@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it">
+<%- include("./partials/head.ejs") %>
+<body>
+
+<%- include("./partials/nav.ejs") %>
+
+<main>
+    <h2>Gestione Tipologie</h2>
+
+    <section class="box">
+        <h3>Inserisci Nuova Tipologia</h3>
+
+        <form method="POST" action="/tipologie">
+            <input type="text" name="nome" placeholder="Nome tipologia" required>
+            <button type="submit">Inserisci</button>
+        </form>
+    </section>
+
+    <section class="box">
+        <h3>Lista Tipologie</h3>
+
+        <% if (tipologie.length > 0) { %>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Azioni</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <% tipologie.forEach(tipologia => { %>
+                    <tr>
+                        <td><%= tipologia.id %></td>
+                        <td><%= tipologia.nome %></td>
+                        <td class="actions">
+                            <a class="btn-edit" href="/tipologie/<%= tipologia.id %>/edit">Modifica</a>
+
+                            <form method="POST"
+                                  action="/tipologie/<%= tipologia.id %>/delete"
+                                  onsubmit="return confirm('Eliminare questa tipologia?');">
+
+                                <button class="btn-delete" type="submit">Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }) %>
+                </tbody>
+
+            </table>
+
+        <% } else { %>
+            <p>Nessuna tipologia presente</p>
+        <% } %>
+
+    </section>
+</main>
+
+<% if (typeof alertMessage !== 'undefined') { %>
+    <script>
+      alert("<%= alertMessage %>");
+    </script>
+<% } %>
+
+</body>
+</html>
