@@ -131,8 +131,7 @@ psql -U <role> -d <database> -f db/seed.sql
 2. Avvia l'app:
    npm start
 
-## Struttura del progetto (breve)
-Test
+## Test
 - I test unitari si trovano nella cartella `test/` e sono scritti con Mocha + Chai; per gli stub/spie viene usato Sinon.
 - Le dipendenze di sviluppo necessarie sono già presenti in `package.json` (mocha, chai, sinon).
 
@@ -179,7 +178,14 @@ Note
   - `test/tipologieController.test.js`
   - `test/homepageController.test.js`
 
-Struttura del progetto (breve)
+Suggerimenti rapidi
+- Per eseguire un singolo test in modo più veloce durante lo sviluppo:
+
+```bash
+npx mocha --exit test/ateneiController.test.js
+```
+
+## Struttura del progetto
 - `app.js` - entrypoint dell'app Express
 - `config/db.js` - configurazione connessione PostgreSQL
 - `controllers/` - logica delle route
@@ -187,6 +193,7 @@ Struttura del progetto (breve)
 - `routes/` - definizione delle rotte
 - `views/` - template EJS
 - `public/` - risorse statiche
+- `test/` - test unitari (Mocha / Chai / Sinon)
 - `db/` - file `migrations.sql` e `seed.sql`
 
 ## Note e consigli
