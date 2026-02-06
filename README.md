@@ -1,11 +1,11 @@
 # Reach17
 
-### Progetto Node.js (Express) per la gestione di corsi, tipologie e atenei.
+## Progetto Node.js (Express) per la gestione di corsi, tipologie e atenei.
 
-### Badges
+## Badges
 - Node: >= 22.20.0 (consigliata)
 
-Prerequisiti
+## Prerequisiti
 - Node.js: versione di sviluppo usata 24.13.0 (compatibile con Node >= 22.20.0 consigliata)
 - PostgreSQL come DBMS
 - Brew (macOS) per installare PostgreSQL opzionalmente
