@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -34,5 +38,22 @@ jobs:
       - name: Security audit
         run: npm audit --omit=dev --audit-level=high
 
+      - name: Login a GitHub Container Registry
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build immagine Docker
+        if: github.event_name == 'pull_request'
         run: docker build -t reach17:${{ github.sha }} .
+
+      - name: Build e push immagine Docker su GHCR
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/marcosar1991/reach17:${{ github.sha }}
