@@ -1,0 +1,38 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout codice
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installazione dipendenze
+        run: npm ci
+
+      - name: Linting
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Security audit
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Build immagine Docker
+        run: docker build -t reach17:${{ github.sha }} .
