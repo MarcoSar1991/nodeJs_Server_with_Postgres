@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -57,3 +57,9 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/marcosar1991/reach17:${{ github.sha }}
+
+      - name: Deploy su Render
+        if: github.event_name == 'push'
+        run: |
+          curl -fsS -X POST \
+            "${{ secrets.RENDER_DEPLOY_HOOK_URL }}&imgURL=ghcr.io%2Fmarcosar1991%2Freach17%3A${{ github.sha }}"
