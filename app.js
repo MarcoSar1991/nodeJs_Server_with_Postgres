@@ -23,7 +23,7 @@ app.use('/tipologie', tipologieRoutes);
 app.use('/corsi', corsiRoutes);
 app.use('/', homepageRoutes);
 
-if (process.env.APP_ENV !== "production") {
+if (["development", "staging"].includes(process.env.APP_ENV)) {
   app.get("/debug-sentry", () => {
     throw new Error("Sentry test error");
   });
