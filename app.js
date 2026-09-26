@@ -1,4 +1,6 @@
 require('dotenv').config();
+require("./instrument");
+
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -20,6 +22,10 @@ app.use('/atenei', ateneiRoutes);
 app.use('/tipologie', tipologieRoutes);
 app.use('/corsi', corsiRoutes);
 app.use('/', homepageRoutes);
+
+app.get("/debug-sentry", () => {
+  throw new Error("Sentry test error");
+});
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
