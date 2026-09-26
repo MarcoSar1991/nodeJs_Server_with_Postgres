@@ -38,6 +38,10 @@ jobs:
       - name: Security audit
         run: npm audit --omit=dev --audit-level=high
 
+      - name: Build immagine Docker
+        if: github.event_name == 'pull_request'
+        run: docker build -t reach17:${{ github.sha }} .
+
       - name: Login a GitHub Container Registry
         if: github.event_name == 'push'
         uses: docker/login-action@v3
@@ -45,10 +49,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build immagine Docker
-        if: github.event_name == 'pull_request'
-        run: docker build -t reach17:${{ github.sha }} .
 
       - name: Build e push immagine Docker su GHCR
         if: github.event_name == 'push'
@@ -58,8 +58,46 @@ jobs:
           push: true
           tags: ghcr.io/marcosar1991/reach17:${{ github.sha }}
 
-      - name: Deploy su Render
-        if: github.event_name == 'push'
+  deploy-staging:
+    if: github.event_name == 'push'
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy su Staging
         run: |
           curl -fsS -X POST \
-            "${{ secrets.RENDER_DEPLOY_HOOK_URL }}&imgURL=ghcr.io%2Fmarcosar1991%2Freach17%3A${{ github.sha }}"
+            "${{ secrets.RENDER_STAGING_DEPLOY_HOOK_URL }}&imgURL=ghcr.io%2Fmarcosar1991%2Freach17%3A${{ github.sha }}"
+
+      - name: Smoke test Staging
+        run: |
+          sleep 45
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --retry 6 \
+            --retry-delay 10 \
+            "${{ vars.STAGING_URL }}"
+
+  deploy-production:
+    if: github.event_name == 'push'
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy su Production
+        run: |
+          curl -fsS -X POST \
+            "${{ secrets.RENDER_PRODUCTION_DEPLOY_HOOK_URL }}&imgURL=ghcr.io%2Fmarcosar1991%2Freach17%3A${{ github.sha }}"
+
+      - name: Smoke test Production
+        run: |
+          sleep 45
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --retry 6 \
+            --retry-delay 10 \
+            "${{ vars.PRODUCTION_URL }}"
