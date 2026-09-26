@@ -122,7 +122,7 @@ Per i push su `main` esegue gli stessi controlli CI e poi:
 5. promuove la stessa immagine in production;
 6. esegue uno smoke test sulla production.
 
-Run CI/CD finale: **https://github.com/MarcoSar1991/nodeJs_Server_with_Postgres/actions/runs/36246006443**
+Run CI/CD finale: **https://github.com/MarcoSar1991/nodeJs_Server_with_Postgres/actions/runs/36247502975**
 
 ## Strategia degli artifact
 
