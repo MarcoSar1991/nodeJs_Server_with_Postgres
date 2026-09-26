@@ -1,208 +1,172 @@
 # Reach17
 
-## Progetto Node.js (Express) per la gestione di corsi, tipologie e atenei.
+Reach17 è un'applicazione web per la gestione di corsi, tipologie formative e atenei. Il backend è sviluppato con Node.js ed Express, le pagine sono renderizzate con EJS e i dati sono salvati in PostgreSQL.
 
-## Badges
-- Node: >= 22.20.0 (consigliata)
+## Architettura
 
-## Prerequisiti
-- Node.js: versione di sviluppo usata 24.13.0 (compatibile con Node >= 22.20.0 consigliata)
-- PostgreSQL come DBMS
-- Brew (macOS) per installare PostgreSQL opzionalmente
+```mermaid
+flowchart LR
+    Dev[Development<br/>Docker Compose] --> GitHub[GitHub Actions]
+    GitHub --> GHCR[GitHub Container Registry]
+    GHCR --> Staging[Render Staging]
+    Staging --> Production[Render Production]
+    Staging & Production --> DB[(PostgreSQL Render)]
+    Staging & Production --> Sentry[Sentry]
+    UptimeRobot[UptimeRobot] --> Production
+```
 
-## Installazione
-1. Clona il repository:
-   git clone <repo-url>
-2. Entra nella cartella del progetto:
-   cd Reach17
-3. Installa le dipendenze:
-   npm install
+I componenti principali sono:
 
-## Configurazione ambiente
-- Il progetto usa una connessione a PostgreSQL configurata in `config/db.js`.
-- È consigliato impostare le variabili d'ambiente (esempi):
-  - DB_HOST (default: localhost)
-  - DB_PORT (default: 5432)
-  - DB_NAME
-  - DB_USER
-  - DB_PASSWORD
-- Puoi configurare le variabili per la connessione al database seguendo lo schema presente nel file `.env.example` nella root del progetto.
+- un'applicazione Node.js/Express con template EJS;
+- un database PostgreSQL;
+- Docker e Docker Compose per l'ambiente locale;
+- GitHub Actions per CI/CD e GitHub Container Registry (GHCR) per le immagini;
+- Render per staging e production;
+- UptimeRobot e Sentry per monitoraggio ed error tracking.
 
-## Creazione del database (macOS con Homebrew)
-Di seguito ogni passo ha una breve indicazione e, immediatamente sotto, il comando da eseguire nel terminale (o dentro `psql` quando indicato).
+## Ambienti
 
-1. Installazione di PostgreSQL (se non già presente)
+| Ambiente | Esecuzione | Scopo |
+| --- | --- | --- |
+| Development | Docker Compose locale | Sviluppo e verifica con applicazione e PostgreSQL containerizzati |
+| Staging | Render | Validazione automatica prima della promozione in production |
+| Production | Render | Servizio pubblico monitorato |
+
+Staging e production condividono attualmente la stessa istanza PostgreSQL su Render a causa dei limiti del piano gratuito. Questa scelta riduce l'isolamento tra gli ambienti ed è adatta esclusivamente al contesto del progetto accademico.
+
+## Configurazione dell'ambiente
+
+Creare il file locale `.env` a partire da `.env.example` e valorizzare le variabili senza commettere credenziali nel repository.
+
+| Variabile | Descrizione |
+| --- | --- |
+| `DB_USER` | Utente usato dall'applicazione per PostgreSQL |
+| `DB_HOST` | Host PostgreSQL; in Compose corrisponde al nome del servizio `postgres` |
+| `DB_NAME` | Nome del database applicativo |
+| `DB_PASSWORD` | Password dell'utente PostgreSQL |
+| `DB_PORT` | Porta PostgreSQL, normalmente `5432` |
+| `SENTRY_DSN` | DSN del progetto Sentry |
+| `APP_ENV` | Ambiente applicativo: `development`, `staging` o `production` |
+| `APP_VERSION` | Versione/tag dell'immagine usata in locale da Docker Compose |
+
+Il servizio PostgreSQL locale richiede inoltre `POSTGRES_USER`, `POSTGRES_DB` e `POSTGRES_PASSWORD`; devono corrispondere rispettivamente a `DB_USER`, `DB_NAME` e `DB_PASSWORD`.
+
+`.env` è escluso da Git. `.env.example` documenta il contratto di configurazione e deve contenere soltanto nomi delle variabili o valori di esempio non sensibili. Secrets e credenziali reali non devono mai essere committati.
+
+## Avvio locale con Docker Compose
+
+Prerequisiti: Git, Docker e Docker Compose.
 
 ```bash
-brew install postgresql
+git clone https://github.com/MarcoSar1991/nodeJs_Server_with_Postgres.git
+cd nodeJs_Server_with_Postgres
+cp .env.example .env
+docker compose up --build
 ```
 
-2. Avviare il servizio PostgreSQL
+L'applicazione è disponibile su <http://localhost:3000>. Per arrestare e rimuovere i container:
 
 ```bash
-brew services start postgresql
+docker compose down
 ```
 
-3. Connettersi al server come admin (utente `postgres`)
+PostgreSQL salva i dati nel named volume `postgres_data`. `docker compose down` conserva il volume e i dati; per eliminare anche il database locale e ripartire da zero usare:
 
 ```bash
-psql postgres
+docker compose down -v
 ```
 
-4. Verificare la connessione (comando da eseguire dentro `psql`)
+## Inizializzazione del database
 
-```
-\conninfo
-```
+Alla prima creazione del volume PostgreSQL, `db/migrations.sql` crea lo schema e `db/seed.sql` inserisce i dati iniziali. Gli script sono montati in `/docker-entrypoint-initdb.d` ed eseguiti automaticamente nell'ordine indicato.
 
-5. Creare un ruolo utente con password (sostituire `<role>` e `password`) — esegui dentro `psql` oppure costruisci il comando SQL e lancialo con `psql`:
+PostgreSQL non riesegue questi script quando il volume è già inizializzato. Per ripetere l'inizializzazione locale occorre eliminare il volume con `docker compose down -v` e riavviare i servizi.
 
-Dentro `psql`:
-```
-CREATE ROLE <role> WITH LOGIN PASSWORD 'password';
-```
+## Quality e security checks
 
-Oppure da terminale (fuori `psql`):
-```bash
-psql -d postgres -c "CREATE ROLE <role> WITH LOGIN PASSWORD 'password';"
-```
-
-6. Consentire al ruolo di creare database (opzionale ma utile in sviluppo) — dentro `psql`:
-
-```
-ALTER ROLE <role> CREATEDB;
-```
-
-Oppure da terminale:
-```bash
-psql -d postgres -c "ALTER ROLE <role> CREATEDB;"
-```
-
-7. Verificare i ruoli e i permessi (dentro `psql`):
-
-```
-\du
-```
-
-8. Disconnettersi dall'utente admin (uscire da `psql`):
-
-```
-\q
-```
-
-9. Connettersi con la nuova utenza (fuori `psql`):
+I controlli eseguiti dalla pipeline possono essere riprodotti localmente:
 
 ```bash
-psql -d postgres -U <role>
-```
-
-10. Creare il database (sostituire `<database>`) — dentro `psql` o usando il comando SQL da terminale:
-
-Dentro `psql`:
-```
-CREATE DATABASE <database>;
-```
-
-Da terminale:
-```bash
-psql -d postgres -U <role> -c "CREATE DATABASE <database>;"
-```
-
-11. Connettersi al nuovo database (dentro `psql`):
-
-```
-\c <database>
-```
-
-12. Creare le tabelle tramite file di migrazioni (esegui questo comando dal terminale, nella root del progetto):
-
-```bash
-psql -U <role> -d <database> -f db/migrations.sql
-```
-
-13. (Opzionale) Popolare le tabelle con dati di esempio (sempre dal terminale):
-
-```bash
-psql -U <role> -d <database> -f db/seed.sql
-```
-
-## Avvio locale del progetto
-1. Assicurati di aver impostato le variabili d'ambiente per la connessione al DB o modifica `config/db.js` con i parametri corretti.
-2. Avvia l'app:
-   npm start
-
-## Test
-- I test unitari si trovano nella cartella `test/` e sono scritti con Mocha + Chai; per gli stub/spie viene usato Sinon.
-- Le dipendenze di sviluppo necessarie sono già presenti in `package.json` (mocha, chai, sinon).
-
-Eseguire i test
-1. Installa le dipendenze (se non l'hai già fatto):
-
-```bash
-npm install
-```
-
-2. Esegui tutti i test:
-
-```bash
+npm ci
+npm run lint
 npm test
-# oppure
-npx mocha --exit
+npm audit --omit=dev --audit-level=high
 ```
 
-3. Eseguire un singolo file di test (esempio):
+I test unitari dei controller sono scritti con Mocha e Chai e usano Sinon per stub e spy. Non richiedono un database attivo perché l'accesso ai model viene simulato. La pipeline fallisce in modo visibile se uno dei controlli obbligatori non termina correttamente.
 
-```bash
-npx mocha test/ateneiController.test.js --exit
-```
+## Docker
 
-Opzioni utili
-- Eseguire i test in watch mode (debug/ sviluppo):
+Il `Dockerfile` produce un'immagine orientata alla produzione basata su Node 22 Alpine. Copia prima i manifest npm, installa soltanto le dipendenze production con `npm ci --omit=dev`, imposta `NODE_ENV=production`, espone la porta `3000` ed esegue `npm start` con l'utente non-root `node`.
 
-```bash
-npx mocha --watch
-```
+`.dockerignore` esclude dal build context dipendenze locali, repository Git, `.env`, log, coverage e file IDE. I secrets vengono forniti esclusivamente a runtime.
 
-- Generare coverage (opzionale):
+## CI/CD
 
-```bash
-npm install --save-dev nyc
-npx nyc mocha --exit
-```
+Il workflow GitHub Actions si attiva su ogni pull request verso `main` e su ogni push a `main`.
 
-Note
-- I test usano `sinon` per stubbare i metodi dei model, quindi non è necessario avere un database PostgreSQL attivo per eseguire la maggior parte dei test controller.
-- I file di test attualmente inclusi sono:
-  - `test/ateneiController.test.js`
-  - `test/corsiController.test.js`
-  - `test/tipologieController.test.js`
-  - `test/homepageController.test.js`
+Per le pull request esegue:
 
-Suggerimenti rapidi
-- Per eseguire un singolo test in modo più veloce durante lo sviluppo:
+1. installazione riproducibile con `npm ci`;
+2. lint;
+3. test;
+4. audit delle dipendenze production;
+5. build dell'immagine Docker senza pubblicazione o deploy.
 
-```bash
-npx mocha --exit test/ateneiController.test.js
-```
+Per i push su `main` esegue gli stessi controlli CI e poi:
+
+1. costruisce l'immagine Docker con un tag basato sul commit SHA;
+2. pubblica l'immagine su GitHub Container Registry;
+3. avvia il deploy automatico in staging;
+4. esegue uno smoke test sullo staging;
+5. promuove la stessa immagine in production;
+6. esegue uno smoke test sulla production.
+
+Run CI/CD finale: **https://github.com/MarcoSar1991/nodeJs_Server_with_Postgres/actions/runs/36246006443**
+
+## Strategia degli artifact
+
+In locale Docker Compose usa `APP_VERSION` come tag dell'immagine. In CI/CD ogni immagine è identificata dal commit SHA, che collega in modo univoco codice e artifact. La stessa immagine immutabile validata in staging viene promossa in production senza essere ricostruita.
+
+## Deploy
+
+- Staging: <https://reach17-mg4l.onrender.com>
+- Production: <https://reach17-4vux.onrender.com>
+
+## Monitoring
+
+UptimeRobot controlla periodicamente l'URL di production. Un alert di downtime indica che il servizio non ha risposto correttamente per il numero di verifiche configurato: occorre controllare stato e log del servizio Render, ultima run CI/CD e dipendenze esterne.
+
+Sentry raccoglie gli errori applicativi e distingue gli eventi tramite `APP_ENV` negli ambienti `development`, `staging` e `production`. Un evento Sentry mostra eccezione, stack trace, ambiente e frequenza; questi dati consentono di capire l'impatto, individuare il punto del codice e confrontare l'orario dell'errore con i deploy recenti.
+
+## Sicurezza
+
+- `.env` è escluso da Git e i secrets non sono hardcodati nel codice o nell'immagine;
+- i deploy hook Render sono conservati in GitHub Secrets;
+- gli URL pubblici di staging e production sono configurati come GitHub Variables;
+- credenziali PostgreSQL e configurazione Sentry sono gestite tramite Render Environment Variables;
+- il processo Node nel container viene eseguito come utente non-root;
+- la pipeline controlla le dipendenze production con `npm audit --omit=dev --audit-level=high`.
 
 ## Struttura del progetto
-- `app.js` - entrypoint dell'app Express
-- `config/db.js` - configurazione connessione PostgreSQL
-- `controllers/` - logica delle route
-- `models/` - funzioni d'accesso ai dati
-- `routes/` - definizione delle rotte
-- `views/` - template EJS
-- `public/` - risorse statiche
-- `test/` - test unitari (Mocha / Chai / Sinon)
-- `db/` - file `migrations.sql` e `seed.sql`
 
-## Note e consigli
-- Versione Node: il progetto è stato sviluppato con Node 24.13.0; in produzione consigliata almeno la 22.20.0.
-- Se usi un file `.env`, tieni fuori le credenziali dal controllo versione (vedi `.gitignore`).
+- `app.js`: entrypoint Express e configurazione delle route;
+- `instrument.js`: inizializzazione di Sentry;
+- `config/`: connessione a PostgreSQL;
+- `controllers/`: logica applicativa;
+- `models/`: accesso ai dati;
+- `routes/`: definizione delle route;
+- `views/`: template EJS;
+- `public/`: risorse statiche;
+- `test/`: test unitari Mocha, Chai e Sinon;
+- `db/`: schema e dati iniziali;
+- `.github/workflows/`: pipeline CI/CD;
+- `Dockerfile` e `docker-compose.yaml`: container production e ambiente locale.
 
-## Problemi comuni
-- Errore di connessione: verifica che PostgreSQL sia in esecuzione e che host/porta/credenziali siano corrette.
-- Migration/Seed: assicurati di eseguire `migrations.sql` prima di `seed.sql`.
+## Link utili
+
+- Repository: <https://github.com/MarcoSar1991/nodeJs_Server_with_Postgres>
 
 ## Licenza
-- Questo progetto è distribuito sotto la licenza MIT. Vedi il file `LICENSE` per il testo completo.
+
+Il progetto è distribuito con licenza MIT. Il testo completo è disponibile nel file `LICENSE`.

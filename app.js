@@ -23,9 +23,11 @@ app.use('/tipologie', tipologieRoutes);
 app.use('/corsi', corsiRoutes);
 app.use('/', homepageRoutes);
 
-app.get("/debug-sentry", () => {
-  throw new Error("Sentry test error");
-});
+if (process.env.APP_ENV !== "production") {
+  app.get("/debug-sentry", () => {
+    throw new Error("Sentry test error");
+  });
+}
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
