@@ -15,6 +15,7 @@ permissions:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout codice
@@ -23,7 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Installazione dipendenze
@@ -40,7 +41,13 @@ jobs:
 
       - name: Build immagine Docker
         if: github.event_name == 'pull_request'
-        run: docker build -t reach17:${{ github.sha }} .
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          tags: reach17:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Login a GitHub Container Registry
         if: github.event_name == 'push'
@@ -52,16 +59,19 @@ jobs:
 
       - name: Build e push immagine Docker su GHCR
         if: github.event_name == 'push'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
           tags: ghcr.io/marcosar1991/reach17:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy-staging:
     if: github.event_name == 'push'
     needs: ci
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Deploy su Staging
@@ -84,6 +94,7 @@ jobs:
     if: github.event_name == 'push'
     needs: deploy-staging
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Deploy su Production

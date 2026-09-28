@@ -57,6 +57,12 @@ Il servizio PostgreSQL locale richiede inoltre `POSTGRES_USER`, `POSTGRES_DB` e 
 
 Prerequisiti: Git, Docker e Docker Compose.
 
+Per eseguire i comandi npm fuori dai container è richiesta la versione Node.js 24 LTS. Se si utilizza `nvm`, il file `.nvmrc` consente di allineare automaticamente la versione locale:
+
+```bash
+nvm use
+```
+
 ```bash
 git clone https://github.com/MarcoSar1991/nodeJs_Server_with_Postgres.git
 cd nodeJs_Server_with_Postgres
@@ -97,7 +103,7 @@ I test unitari dei controller sono scritti con Mocha e Chai e usano Sinon per st
 
 ## Docker
 
-Il `Dockerfile` produce un'immagine orientata alla produzione basata su Node 22 Alpine. Copia prima i manifest npm, installa soltanto le dipendenze production con `npm ci --omit=dev`, imposta `NODE_ENV=production`, espone la porta `3000` ed esegue `npm start` con l'utente non-root `node`.
+Il `Dockerfile` produce un'immagine orientata alla produzione basata su Node 24 LTS Alpine. Copia prima i manifest npm, installa soltanto le dipendenze production con `npm ci --omit=dev`, imposta `NODE_ENV=production`, espone la porta `3000` ed esegue `npm start` con l'utente non-root `node`.
 
 `.dockerignore` esclude dal build context dipendenze locali, repository Git, `.env`, log, coverage e file IDE. I secrets vengono forniti esclusivamente a runtime.
 
